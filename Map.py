@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 from scipy.signal import convolve2d as conv
+from itertools import combinations
 
 import numpy as np
 
@@ -21,9 +22,16 @@ class Map:
         # the third from left:
         # 0 = nothing 1 = has smell
 
+        if side_len < 1: raise ValueError("impossible side length")
+
+        self._side_len = side_len
         self.data = np.zeros((side_len, side_len), dtype=int)
         
-        start_x, start_y, end_x, end_y = [np.random.randint(side_len) for _ in range(4)]
+        coords = list(combinations(range(side_len), 2))
+        np.random.shuffle(coords)
+
+        start_x, start_y = coords.pop()
+        end_x, end_y = coords.pop()
 
         self.data[start_x, start_y] = 4
         self.data[end_x, end_y] = 3
@@ -61,8 +69,12 @@ class Map:
         self.data += 100 * (smell_mask > 0)
 
     @property
-    def startpos(self):
+    def startpos(self) -> tuple:
         return self._startpos
+
+    @property
+    def side_len(self) -> int:
+        return self._side_len
 
 if __name__ == '__main__':
     m = Map(4)
