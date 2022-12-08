@@ -31,9 +31,8 @@ B --> C[launch the AI generator]
 C --> D{if round finish?}
 D -->|Yes| B
 D -->|No| E[Display]
-E --> F[Scan env.]
-F --> G[Make hypothesis]
-G --> H[Add facts]
+E --> G[Make hypothesis]
+G --> H[Add facts: scan]
 H --> I{Are enough?}
 I -->|No| H
 I -->|Yes| K[Move]

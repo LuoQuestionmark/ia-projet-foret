@@ -68,6 +68,31 @@ class Map:
         smell_mask = conv(self.monster_mask, np.ones((3, 3)), mode='same')
         self.data += 100 * (smell_mask > 0)
 
+    def is_out(self, coord):
+        if self.data[coord] == 3:
+            return True
+        else:
+            return False
+
+    def is_has_smell(self, coord):
+        if self.data[coord] & 100 != 0:
+            return True
+        else:
+            return False
+
+    def is_windy(self, coord):
+        if self.data[coord] & 10 != 0:
+            return True
+        else:
+            return False
+
+    def is_has_light(self, coord):
+        """
+        this function is the copy of "is_out", the reason of creating
+        this function is purely for better semantic.
+        """
+        return self.is_out(coord)
+
     @property
     def startpos(self) -> tuple:
         return self._startpos
