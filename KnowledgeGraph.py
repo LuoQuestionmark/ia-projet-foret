@@ -2,9 +2,11 @@
 The Graph show save the hypothesis and the observation.
 """
 from collections.abc import Iterable
-from collections import defaultdict
 
-from itertools import chain, combinations, combinations_with_replacement, product, permutations
+from itertools import product
+from sys import exit
+
+import numpy as np 
 
 from Map import Map
 from Agent import Agent
@@ -39,46 +41,99 @@ class Assumption:
         pass
 
 class KnowledgeGraph:
-    def __init__(self, points: Iterable[tuple[int, int]]) -> None:
-        # hypothesis_vertices are the hyp on
-        # the points on map given as input.
-        # each element in this dict is a valid hyp.
-        # the key is encoded in a way so that a element
-        # can be found based on a observation
-        # the value is a value from 0 to 1
-        # 1 is true, 0 is false, and the values between
-        # are probabilities
-        self.hypothesis_vertices = dict()
+    def __init__(self, map: Map, points: list[tuple[int, int]]) -> None:
+        self.map = map
+        self.input_list = points
+        
+        self.hypotheses_size = 4 ** len(points)
+        self.hypotheses = np.empty(self.hypotheses_size, dtype=float)
+        self.hypotheses.fill(1 / self.hypotheses_size)
 
-        # observng vertices are the collection of every
-        # possible observation that can be done
-        # each vertex is bound with one or more vertex
-        # in the hypothesis_vertices, which are saved as
-        # a set of value in as the value of this dict
-        self.observing_vertices = defaultdict(set)
+    def encoding(self, status: Iterable[int]) -> int:
+        depl = 0
+        for value in reversed(status):
+            depl *= 4
+            depl += value
+        return depl
 
-        # the exactly encoding of a vertex in the hypothesis_vertices
-        # is the following:
-        # [(<coordx>,<coordy>):<status>, ...]
-        # which is saved in the class `Assumption`
-        # with coordx, coordy in [0,edge_len] (edge_len < 10)
-        # with status in [0, 1, 2, 3]
-        #      with 0: nothing, safe
-        #           1: monster
-        #           2: hole
-        #           3: exit
+    def decoding(self, value: int) -> list[int]:
+        status = list()
+        while value >= 4:
+            status.append(value % 4)
+            value = value // 4
+        status.append(value)
+        return list(status)
 
-        possibilities = product(combinations_with_replacement(range(3), len(points) - 1), [3])
-        possibilities = [chain(i[0], [i[1]]) for i in possibilities]
+    def find_all(self, coord: tuple[int, int], status: int) -> list[tuple[int, int]]:
+        """
+        return the list of all corresponding indexs with <status> at <coord>
+        """
+        try:
+            indexs = list()
+            element_index = self.input_list.index(coord)
 
-        for status in permutations(possibilities):
-            assumption = Assumption(points, status)
-            self.hypothesis_vertices[assumption] = 1 / (4 ** len(points))
+            for i in range(self.hypothese_size):
+                value_at_element = i % (4 ** (element_index + 1))
+                value_at_element = value_at_element // 4 ** element_index
+
+                if status != value_at_element:
+                    continue
+                indexs.append(i)
+
+            return indexs
+
+        except ValueError:
+            print(f"unable to get coordinate with given coord: {coord}")
+            exit(1)
+
+    def update(self, coord: tuple[int, int], observation: int) -> None:
+        """
+        observation:
+        0: wind
+        1: smell
+        2: light
+        """
+        if coord not in self.input_list:
+            return
+        if observation not in range(2):
+            return
+
+        element_index = self.input_list.index(coord)
+
+        if observation == 2:
+            # find the exit
+            old_validation = self.get_valid_hypotheses_number()
+
+            for hypothesis in range(self.hypotheses_size):
+                if self.decoding(hypothesis)[element_index] != 2:
+                    self.hypotheses[hypothesis] = np.NaN
+            
+            new_validation = self.get_valid_hypotheses_number()
+
+            for hypothesis in range(self.hypotheses_size):
+                if self.decoding(hypothesis)[element_index] == 2:
+                    self.hypotheses[hypothesis] *= old_validation
+                    self.hypotheses[hypothesis] /= new_validation
+            return
+
+        else:
+            pass
+
+                
+
+        neighbors = self.map.get_all_neighbor(coord)
+        for neighbor in neighbors:
+            pass
+        
+    def get_valid_hypotheses_number(self) -> int:
+        return len([i for i in self.hypotheses if i != np.NaN])
+        
 
 if __name__ == '__main__':
     m = Map(4)
     a = Agent(m)
-    k = KnowledgeGraph(a.detectable_coords())
-    for i in k.hypothesis_vertices:
-        print(i)
-    print(len(k.hypothesis_vertices))
+    k = KnowledgeGraph(m, a.detectable_coords())
+    # for i in k.hypothesis_vertices:
+    #     print(i)
+
+    print(k.decoding(45))

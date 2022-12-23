@@ -1,6 +1,6 @@
 from matplotlib import pyplot as plt
 from scipy.signal import convolve2d as conv
-from itertools import combinations
+from itertools import combinations, product
 
 import numpy as np
 
@@ -92,6 +92,27 @@ class Map:
         this function is purely for better semantic.
         """
         return self.is_out(coord)
+
+    def get_all_neighbor(self, coord):
+        ret = list()
+        if coord[0] not in range(self.side_len):
+            return ret
+        if coord[1] not in range(self.side_len):
+            return ret
+        x_lists = [coord.x, ]
+        y_lists = [coord.y, ]
+
+        if (coord[0] > 0):
+            x_lists.append(coord[0] - 1)
+        if (coord[0] < self.side_len - 1):
+            x_lists.append(coord[0] + 1)
+
+        if (coord[1] > 0):
+            y_lists.append(coord[1] - 1)
+        if (coord[1] < self.side_len - 1):
+            y_lists.append(coord[1] + 1)
+
+        return product(x_lists, y_lists)
 
     @property
     def startpos(self) -> tuple:

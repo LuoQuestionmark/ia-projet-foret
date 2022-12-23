@@ -40,3 +40,33 @@ K --> L[Display]
 L --> D
 ```
 
+## encoding of assumptions
+
+### encoding
+
+for each iteration of exploration, we start by giving the analysor a list of coordinates, these are the coordinates with unknown situation: then the program will create an array to represent each possible (or impossible) siutation.
+
+the first step if to establish a given ordre between the lists of 2D coordinates. we use simply the ordre of the input. i.e. we save the list of input in the program as the interface of input and output. for the next, there will be no more `coord (x, y)` but "coord at `index x` of the list".
+
+the second part is to build the actual array with `numpy`. for each coordinate we suppose its status is one of the following four:
+
+- nothing
+- monster
+- hole
+- exit
+
+this makes a unique decl for each assupmtion, with is a set of relationb between `coord1, coord2, ..., coordn` to $\{0, 3\} ^ n$.
+
+so the formula to calculate the `depl` is:
+
+$$
+depl = \sum_i {s_i \cdot 4^i}
+$$
+
+with $i$ the status of the `coordi`.
+
+### decoding
+
+to decode, we have the status of one coord. the first step is to find the `index`. then we need to get all the item in the table that match this index the its status.
+
+to deal with the higher parts, use a `mod` with $4^{i+1}$, then the lower parts are safely negalted with a `int division`. write this in a seperate function.
