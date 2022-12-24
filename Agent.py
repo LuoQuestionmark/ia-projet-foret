@@ -60,6 +60,18 @@ class Agent:
             ret.append(3);
         return ret
 
+    def legal_move_coords(self):
+        ret = list()
+        if self.pos[0] < self.board.side_len - 1:
+            ret.append((self.pos[0] + 1, self.pos[1]))
+        if self.pos[1] < self.board.side_len - 1:
+            ret.append((self.pos[0], self.pos[1] + 1))
+        if self.pos[0] > 0:
+            ret.append((self.pos[0] - 1, self.pos[1]))
+        if self.pos[1] > 0:
+            ret.append((self.pos[0], self.pos[1] - 1))
+        return ret
+
     def detect(self, coord, detector):
         """
         detect the coordinate `coord` using a given detector.
@@ -68,7 +80,7 @@ class Agent:
         2: light
         """
         val = False
-        if detector not in range(2):
+        if detector not in range(3):
             raise RuntimeError(f"Unexpected detector id {detector}, should be between 0 and 2")
         if detector == 0:
             val = self.board.is_has_smell(coord)
@@ -94,6 +106,9 @@ class Agent:
         if 3 in legal_moves:
             list_coord_y.append(self.pos[1] - 1)
         return list(product(list_coord_x, list_coord_y))
+       
+
+
 
 if __name__ == '__main__':
     m = Map(4)

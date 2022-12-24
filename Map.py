@@ -69,19 +69,21 @@ class Map:
         self.data += 100 * (smell_mask > 0)
 
     def is_out(self, coord):
-        if self.data[coord] == 3:
+        if coord is None:
+            return False
+        if self.data[coord] % 10 == 3:
             return True
         else:
             return False
 
     def is_has_smell(self, coord):
-        if self.data[coord] & 100 != 0:
+        if self.data[coord] // 100 != 0:
             return True
         else:
             return False
 
     def is_windy(self, coord):
-        if self.data[coord] & 10 != 0:
+        if (self.data[coord] % 100) // 10 != 0:
             return True
         else:
             return False
@@ -99,8 +101,8 @@ class Map:
             return ret
         if coord[1] not in range(self.side_len):
             return ret
-        x_lists = [coord.x, ]
-        y_lists = [coord.y, ]
+        x_lists = [coord[0], ]
+        y_lists = [coord[1], ]
 
         if (coord[0] > 0):
             x_lists.append(coord[0] - 1)
