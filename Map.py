@@ -95,6 +95,9 @@ class Map:
         """
         return self.is_out(coord)
 
+    def get_all_coords(self):
+        return product(range(self.side_len), repeat=2)
+
     def get_all_neighbor(self, coord):
         ret = list()
         if coord[0] not in range(self.side_len):

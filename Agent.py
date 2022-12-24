@@ -11,7 +11,8 @@ class Agent:
     def __init__(self, board: Map) -> None:
         self.board = board
         self.pos = (board.startpos[0], board.startpos[1])
-        self.list_past_pos = [self.pos, ]
+        self.list_past_pos = set()
+        self.list_past_pos.add(self.pos)
 
     def __str__(self) -> str:
         return f"agent current at {self.pos}"
@@ -42,7 +43,9 @@ class Agent:
         else:
             raise ValueError
 
-        self.list_past_pos.append(self.pos)
+        self.list_past_pos.add(self.pos)
+
+        return self.pos
 
     def legal_moves(self):
         """

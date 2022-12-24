@@ -11,7 +11,7 @@ import numpy as np
 from Map import Map
 from Agent import Agent
 
-VERBOSE = 1
+VERBOSE = 0
 
 class Assumption:
     def __init__(self, points: Iterable[tuple[int, int]], status: Iterable[int]) -> None:
@@ -78,6 +78,9 @@ class KnowledgeGraph:
         if VERBOSE > 0:
             print("delete case with startpos = exit")
         startpos = self.map.startpos
+
+        if startpos not in self.input_list:
+            return
         index = self.input_list.index(startpos)
         for hypothesis in self.possible_hypotheses():
             if self.decoding(hypothesis)[index] != 0:
@@ -247,6 +250,8 @@ class KnowledgeGraph:
         # output = sorted(coords.keys(), key=lambda i: coords[i], reverse=True)
         coords = sorted(coords.items(), key=lambda i: i[1])
 
+        coords = [i[0] for i in coords]
+
         if VERBOSE > 0:
             print(f"find low risk coords: {coords}")
 
@@ -274,6 +279,8 @@ class KnowledgeGraph:
                 if VERBOSE > 0:
                     print(self)
 
+        if len(self.get_low_risk_coords()) == 1:
+            return
     def __str__(self) -> str:
         string = ""
         string += f"Knowledge Graph:\n"
