@@ -8,21 +8,29 @@ The purpose of this project is to create a program that is capable to make corre
 
 As always, several components here:
 
-- `Level`, generation of level, answer the query, interaction with the agent;
+- `Map`, generation of level, answer the query, interaction with the agent;
 - `Agent`, the persona of AI, do the query, try to move on the map;
-- `Graph`, `Vertex`, `Edge`, etc. To build the probability graph;
-- `Action`, do whatever the persona can do with the map.
-- `GUI`, interface.
+- `KnowledgeGraph`, build the probability graph.
 
 ## language spec
 
 This time I will write in Python, because I like Python, and because I don't want mess with `JavaFX`, or any interface in C. Maybe I can write the engine in C if Python is too slow. The interface will be present in `matplotlib`.
 
+## launch program
+
+Each component can be launched individually, which is served as a basic test of the component. To launch the program as a whole, one should launch the `main.py`. The following command in a shell can launch the program:
+
+```bash
+python main.py
+```
+
 ## personal note
 
 To get start, there has been already the details from the subject. I should do it with a reasoning system. A little bit of graph theory. For each situation (with the notion of "knowledge") the AI should generate a whole graph of *hypothesis*. Then it observe the environment, give it an *observation*. Which will change the state, and thus give the best choice from the known situation.
 
-## flow in graph
+### flow in graph
+
+(The graph can be shown in `Typora`, which is a markdown editor with extra components.)
 
 ```mermaid
 graph
@@ -39,8 +47,6 @@ I -->|Yes| K[Move]
 K --> L[Display]
 L --> D
 ```
-
-## encoding of assumptions
 
 ### encoding
 
